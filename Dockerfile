@@ -4,7 +4,7 @@ FROM debian:jessie
 ENV DEBIAN_FRONTEND=noninteractive \
   HOME=/root \
   PATH=/usr/local/rvm/bin:$PATH \
-  NPS_VERSION=1.13.35.1 \
+  MORE_HERADER_VERSION=0.33 \
   RUBY_VERSION=2.4.4
 
 WORKDIR /root
@@ -15,14 +15,10 @@ RUN apt-get update && apt-get install -y sudo build-essential unzip uuid-dev zli
 
 ENV TZ=Asia/Tokyo
 
-### Download nginx and ngx_pagespeed source
-RUN wget https://github.com/apache/incubator-pagespeed-ngx/archive/v${NPS_VERSION}-beta.zip && \
-  unzip v${NPS_VERSION}-beta.zip && \
-  rm v${NPS_VERSION}-beta.zip && \
-  cd incubator-pagespeed-ngx-${NPS_VERSION}-beta && \
-  wget https://dl.google.com/dl/page-speed/psol/${NPS_VERSION}-x64.tar.gz && \
-  tar -xzvf ${NPS_VERSION}-x64.tar.gz && \
-  rm ${NPS_VERSION}-x64.tar.gz
+### Download nginx and headers-more-nginx-module source
+RUN wget https://github.com/openresty/headers-more-nginx-module/archive/v${MORE_HERADER_VERSION}.zip && \
+  unzip v${MORE_HERADER_VERSION}.zip && \
+  rm v${MORE_HERADER_VERSION}.zip
 
 ### Install RVM and passenger
 RUN curl -sSL https://rvm.io/mpapis.asc | gpg --import - && \
@@ -63,7 +59,7 @@ RUN adduser --system --no-create-home --disabled-login --disabled-password --gro
   --param=ssp-buffer-size=4 -Wformat -Werror=format-security \
   -Wp,-D_FORTIFY_SOURCE=2' --with-ld-opt='-Wl,-Bsymbolic-functions \
   -Wl,-z,relro -Wl,--as-needed' \
-  --add-module=$HOME/incubator-pagespeed-ngx-${NPS_VERSION}-beta\""
+  --add-module=$HOME/headers-more-nginx-module-${MORE_HERADER_VERSION}\""
 
 # Clean up APT when done.
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
