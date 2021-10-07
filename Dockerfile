@@ -1,4 +1,4 @@
-FROM debian:jessie
+FROM debian:buster
 
 ### Set target versions
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -11,7 +11,7 @@ WORKDIR /root
 
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections && \
   echo 'APT::Get::Clean=always;' >> /etc/apt/apt.conf.d/99AutomaticClean
-RUN apt-get update && apt-get install -y sudo build-essential unzip uuid-dev zlib1g-dev libpcre3 libpcre3-dev unzip wget curl libcurl4-openssl-dev nodejs tzdata
+RUN apt-get update && apt-get install -y sudo build-essential unzip uuid-dev zlib1g-dev libpcre3 libpcre3-dev unzip wget curl libcurl4-openssl-dev nodejs tzdata gpg procps
 
 ENV TZ=Asia/Tokyo
 
@@ -21,7 +21,7 @@ RUN wget https://github.com/openresty/headers-more-nginx-module/archive/v${MORE_
   rm v${MORE_HERADER_VERSION}.zip
 
 ### Install RVM and passenger
-RUN gpg --keyserver hkp://pool.sks-keyservers.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
+RUN gpg --keyserver keyserver.ubuntu.com --recv-key 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
 RUN curl -sSL https://rvm.io/mpapis.asc | gpg --import - && \
   curl -L https://get.rvm.io | /bin/bash -s stable && \
   echo 'source /etc/profile.d/rvm.sh' >> /etc/profile && \
