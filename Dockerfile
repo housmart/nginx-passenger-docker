@@ -1,17 +1,17 @@
-FROM debian:jessie
+FROM debian:buster
 
 ### Set target versions
 ENV DEBIAN_FRONTEND=noninteractive \
   HOME=/root \
   PATH=/usr/local/rvm/bin:$PATH \
   MORE_HERADER_VERSION=0.33 \
-  RUBY_VERSION=2.4.4
+  RUBY_VERSION=2.6.6
 
 WORKDIR /root
 
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections && \
   echo 'APT::Get::Clean=always;' >> /etc/apt/apt.conf.d/99AutomaticClean
-RUN apt-get update && apt-get install -y sudo build-essential unzip uuid-dev zlib1g-dev libpcre3 libpcre3-dev unzip wget curl libcurl4-openssl-dev nodejs tzdata
+RUN apt-get update && apt-get install -y sudo build-essential unzip uuid-dev zlib1g-dev libpcre3 libpcre3-dev unzip wget curl libcurl4-openssl-dev nodejs tzdata gpg procps
 
 ENV TZ=Asia/Tokyo
 
@@ -21,6 +21,7 @@ RUN wget https://github.com/openresty/headers-more-nginx-module/archive/v${MORE_
   rm v${MORE_HERADER_VERSION}.zip
 
 ### Install RVM and passenger
+RUN gpg --keyserver keyserver.ubuntu.com --recv-key 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
 RUN curl -sSL https://rvm.io/mpapis.asc | gpg --import - && \
   curl -L https://get.rvm.io | /bin/bash -s stable && \
   echo 'source /etc/profile.d/rvm.sh' >> /etc/profile && \
@@ -28,7 +29,7 @@ RUN curl -sSL https://rvm.io/mpapis.asc | gpg --import - && \
   rvm requirements && \
   rvm install ${RUBY_VERSION} && \
   bash -l -c "rvm use --default ${RUBY_VERSION} && \
-  gem install passenger --no-rdoc --no-ri"
+  gem install passenger -N"
 
 ### Build nginx & ngx_pagespeed by passenger-install-nginx-module
 RUN adduser --system --no-create-home --disabled-login --disabled-password --group nginx && \
