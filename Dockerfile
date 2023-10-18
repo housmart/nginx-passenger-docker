@@ -1,11 +1,11 @@
-FROM debian:buster
+FROM debian:bookworm
 
 ### Set target versions
 ENV DEBIAN_FRONTEND=noninteractive \
   HOME=/root \
   PATH=/usr/local/rvm/bin:$PATH \
-  MORE_HERADER_VERSION=0.33 \
-  RUBY_VERSION=2.6.6
+  MORE_HERADER_VERSION=0.34 \
+  RUBY_VERSION=3.2.2
 
 WORKDIR /root
 
